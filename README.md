@@ -1,6 +1,20 @@
 # Chat-BOt
 
-A modern, real-time chat application featuring Google's Gemini AI with streaming responses, conversation history, moderation, and robust security.
+A modern full-stack AI chat application built with Express, Socket.io, MongoDB, and Google Gemini. It supports real-time messaging, authenticated user sessions, conversation history, moderation, and secure backend controls.
+
+## Resume Summary
+
+Chat-BOt is a production-style AI chatbot that combines streaming Gemini responses with persistent chat history, JWT-based authentication, and defensive middleware for rate limiting, validation, and content moderation.
+
+Live repository: [https://github.com/dhruvikparmar26-hub/Chat-BOt](https://github.com/dhruvikparmar26-hub/Chat-BOt)
+
+## Tech Stack
+
+- Backend: Node.js, Express, Socket.io
+- Database: MongoDB, Mongoose
+- AI: Google Gemini API
+- Security: JWT, bcryptjs, helmet, rate limiting, input validation, XSS/NoSQL sanitization
+- Frontend: HTML, CSS, JavaScript
 
 ## Project Structure
 
@@ -25,13 +39,12 @@ Chat-BOt/
 
 ## Features
 
-- 🤖 AI streaming responses via Google Gemini with model fallback chain
-- 🔍 Live web search for current affairs queries
+- 🤖 AI streaming responses via Google Gemini with model fallback
 - 💬 Real-time messaging via Socket.io
 - 🔐 JWT authentication with bcrypt password hashing
-- 📜 Conversation history with AI-generated summaries
+- 📜 Persistent conversation history with AI-generated summaries
 - 🛡️ Content moderation, rate limiting, XSS/NoSQL injection protection
-- 🎨 Premium dark theme with responsive design
+- 🎨 Responsive UI with a polished dark theme
 
 ## Setup & Running
 
@@ -110,6 +123,12 @@ node tests/test_ai.js
 3. Set `FRONTEND_URL` to your Vercel URL in the backend env vars
 
 > **Note:** Vercel serverless does NOT support WebSockets. The backend must be deployed to a platform that supports persistent connections.
+
+## Portfolio Notes
+
+- Best for showcasing full-stack JavaScript, realtime systems, authentication, and AI integration
+- Safe to share publicly because secrets are excluded and environment values live in `.env.example`
+- If you want recruiters to test it quickly, add a deployed backend URL here once it is live
 
 ## Security Notes
 
