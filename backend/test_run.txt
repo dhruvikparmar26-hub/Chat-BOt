@@ -1,0 +1,76 @@
+﻿
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  CHAT-BOT BACKEND TESTS
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+
+ΓöÇΓöÇΓöÇ 1. HEALTH CHECK ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Γ£à GET /health returns ok
+   ΓåÆ { status: 'ok' }
+
+ΓöÇΓöÇΓöÇ 2. 404 HANDLER ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Γ£à GET /api/nonexistent returns 404
+   ΓåÆ Correctly returns 404
+
+ΓöÇΓöÇΓöÇ 3. INPUT VALIDATION ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Γ£à Register with short username fails
+   ΓåÆ Validation caught short username
+Γ£à Register with weak password fails
+   ΓåÆ Validation caught weak password
+Γ£à Register with invalid email fails
+   ΓåÆ Validation caught invalid email
+Γ£à Login with empty password fails
+   ΓåÆ Validation caught empty password
+
+ΓöÇΓöÇΓöÇ 4. REGISTRATION ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Γ£à Register new user: tester_1774360039418
+   ΓåÆ Token: eyJhbGciOiJIUzI1NiIs... | Username: tester_1774360039418
+Γ£à Duplicate registration fails
+   ΓåÆ Correctly blocked duplicate user
+
+ΓöÇΓöÇΓöÇ 5. LOGIN ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Γ£à Login with correct credentials
+   ΓåÆ Token: eyJhbGciOiJIUzI1NiIs...
+Γ£à Login with wrong password fails
+   ΓåÆ Correctly rejected wrong password
+Γ£à Login with non-existent email fails
+   ΓåÆ Correctly rejected unknown email
+
+ΓöÇΓöÇΓöÇ 6. PROTECTED ROUTES ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+Γ£à GET /api/auth/history WITHOUT token ΓåÆ 401
+   ΓåÆ Correctly blocked unauthenticated request
+Γ£à GET /api/auth/history WITH token ΓåÆ success
+   ΓåÆ Found 0 session(s)
+Γ£à GET /api/auth/history with fake token ΓåÆ 401
+   ΓåÆ Correctly rejected fake token
+
+ΓöÇΓöÇΓöÇ 7. SOCKET.IO TESTS ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
+   (Requires socket.io-client ΓÇö run separately if not installed)
+Γ£à Guest connects successfully
+   ΓåÆ Connected as guest: keM6a71OZoDMQbE4AAAB
+Γ£à Authenticated user connects
+   ΓåÆ Connected as tester_1774360039418: OgbLHvoqNfcZxQMWAAAD
+Γ£à Moderation: empty message blocked
+   ΓåÆ Blocked: "Invalid message format."
+Γ£à Moderation: blocklist word blocked
+   ΓåÆ Blocked (strike 1): "Sorry, I can't help with that. Please keep the conversation respectful."
+Γ£à Moderation: message >1000 chars blocked
+   ΓåÆ Blocked: "Message too long. Max 1000 characters."
+Γ£à Guest: 2-message limit enforced
+   ΓåÆ Limit hit after messages: "You have reached the free message limit. Please sign up or log in to continue chatting."
+Γ£à Authenticated: chat message + session saved
+   ΓåÆ Session saved: 69c295ecfd942a6fcae82e7a | Summary: "User asked "2+2"; model answered "4"."
+Γ£à History: session appears in GET /api/auth/history
+   ΓåÆ Found session: 69c295ecfd942a6fcae82e7a | Date: 2026-03-24 | Summary: "User asked "2+2"; model answered "4"."
+Γ£à History: GET single session by ID
+   ΓåÆ Session has 2 messages
+Γ£à Authorization: cannot access other user's session
+   ΓåÆ Correctly denied access to other user's session
+Γ£à History: DELETE session
+   ΓåÆ Session deleted.
+Γ£à History: deleted session no longer exists
+   ΓåÆ Session correctly deleted
+
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+  ALL TESTS COMPLETE
+ΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉΓòÉ
+

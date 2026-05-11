@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chat-BOt — AI Assistant</title>
+  <meta name="description" content="Chat-BOt is a real-time AI chat assistant powered by Google Gemini with streaming responses.">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+
+  <!-- Marked.js for markdown rendering -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <!-- Socket.io Client -->
+  <script src="https://cdn.socket.io/4.8.3/socket.io.min.js"></script>
+
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- ═══════════════════ AUTH MODAL OVERLAY ═══════════════════ -->
+  <div id="auth-overlay" class="auth-overlay hidden">
+    <div class="auth-modal">
+      <div class="auth-modal-header">
+        <div class="auth-logo">
+          <div class="auth-logo-icon"><i data-lucide="bot"></i></div>
+          <h2>Chat-BOt</h2>
+        </div>
+        <p class="auth-subtitle" id="auth-subtitle">Sign in to save your conversations</p>
+        <button id="auth-close-btn" class="auth-close-btn" title="Continue as Guest">
+          <i data-lucide="x"></i>
+        </button>
+      </div>
+
+      <!-- Tab Switcher -->
+      <div class="auth-tabs">
+        <button class="auth-tab active" data-tab="login">Sign In</button>
+        <button class="auth-tab" data-tab="register">Sign Up</button>
+      </div>
+
+      <!-- Login Form -->
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="login-email">Email</label>
+          <div class="input-wrapper">
+            <i data-lucide="mail"></i>
+            <input type="email" id="login-email" placeholder="you@example.com" required autocomplete="email">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="login-password">Password</label>
+          <div class="input-wrapper">
+            <i data-lucide="lock"></i>
+            <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password">
+          </div>
+        </div>
+        <p class="form-error hidden" id="login-error"></p>
+        <button type="submit" class="auth-submit-btn" id="login-submit">
+          <span>Sign In</span>
+          <div class="btn-loader hidden"></div>
+        </button>
+      </form>
+
+      <!-- Register Form -->
+      <form id="register-form" class="auth-form hidden">
+        <div class="form-group">
+          <label for="register-username">Username</label>
+          <div class="input-wrapper">
+            <i data-lucide="user"></i>
+            <input type="text" id="register-username" placeholder="johndoe" required autocomplete="username">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="register-email">Email</label>
+          <div class="input-wrapper">
+            <i data-lucide="mail"></i>
+            <input type="email" id="register-email" placeholder="you@example.com" required autocomplete="email">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="register-password">Password</label>
+          <div class="input-wrapper">
+            <i data-lucide="lock"></i>
+            <input type="password" id="register-password" placeholder="Min 8 chars, 1 uppercase, 1 number" required minlength="8" autocomplete="new-password">
+          </div>
+        </div>
+        <p class="form-error hidden" id="register-error"></p>
+        <button type="submit" class="auth-submit-btn" id="register-submit">
+          <span>Create Account</span>
+          <div class="btn-loader hidden"></div>
+        </button>
+      </form>
+
+      <p class="auth-footer">
+        <span id="auth-footer-text">Don't have an account?</span>
+        <button id="auth-switch-btn" class="auth-switch-link">Sign Up</button>
+      </p>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ MAIN APP LAYOUT ═══════════════════ -->
+  <div id="app" class="app-container">
+
+    <!-- ─── SIDEBAR ─── -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-header">
+        <div class="sidebar-brand">
+          <div class="brand-icon"><i data-lucide="bot"></i></div>
+          <h1>Chat-BOt</h1>
+        </div>
+        <button id="sidebar-close-btn" class="sidebar-toggle-btn" title="Close sidebar">
+          <i data-lucide="panel-left-close"></i>
+        </button>
+      </div>
+
+      <button id="new-chat-btn" class="new-chat-btn">
+        <i data-lucide="plus"></i>
+        <span>New Chat</span>
+      </button>
+
+      <div class="sidebar-history">
+        <h3 class="sidebar-section-title">Recent Chats</h3>
+        <div id="history-list" class="history-list">
+          <!-- Sessions populated by JS -->
+        </div>
+        <p id="history-empty" class="history-empty hidden">No conversations yet</p>
+        <p id="history-login-prompt" class="history-empty hidden">
+          <button id="sidebar-login-btn" class="inline-link">Sign in</button> to save chats
+        </p>
+      </div>
+
+      <div class="sidebar-footer">
+        <div id="user-info" class="user-info hidden">
+          <div class="user-avatar" id="user-avatar">U</div>
+          <span id="username-display" class="username-display">User</span>
+          <button id="logout-btn" class="logout-btn" title="Logout">
+            <i data-lucide="log-out"></i>
+          </button>
+        </div>
+        <div id="guest-info" class="user-info">
+          <div class="user-avatar guest-avatar">G</div>
+          <span class="username-display">Guest</span>
+          <button id="sidebar-signin-btn" class="signin-btn">Sign In</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Mobile overlay for sidebar -->
+    <div id="sidebar-overlay" class="sidebar-overlay hidden"></div>
+
+    <!-- ─── MAIN CHAT AREA ─── -->
+    <main class="chat-main">
+      <!-- Top bar -->
+      <header class="chat-header">
+        <button id="sidebar-open-btn" class="sidebar-toggle-btn" title="Open sidebar">
+          <i data-lucide="menu"></i>
+        </button>
+        <div class="chat-header-title">
+          <div class="header-dot"></div>
+          <span id="chat-title">New Chat</span>
+        </div>
+        <div class="chat-header-actions">
+          <button id="header-login-btn" class="header-auth-btn hidden">
+            <i data-lucide="log-in"></i>
+            <span>Sign In</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Messages Container -->
+      <div id="chat-messages" class="chat-messages">
+        <!-- Welcome screen -->
+        <div id="welcome-screen" class="welcome-screen">
+          <div class="welcome-icon">
+            <i data-lucide="sparkles"></i>
+          </div>
+          <h2>Welcome to Chat-BOt</h2>
+          <p>Your AI assistant powered by Google Gemini. Ask me anything!</p>
+          <div class="welcome-suggestions">
+            <button class="suggestion-chip" data-msg="Explain quantum computing in simple terms">
+              <i data-lucide="atom"></i> Explain quantum computing
+            </button>
+            <button class="suggestion-chip" data-msg="Write a Python function to sort a list">
+              <i data-lucide="code-2"></i> Write a Python sort function
+            </button>
+            <button class="suggestion-chip" data-msg="What are the latest trends in AI?">
+              <i data-lucide="trending-up"></i> Latest AI trends
+            </button>
+            <button class="suggestion-chip" data-msg="Give me a healthy dinner recipe">
+              <i data-lucide="chef-hat"></i> Healthy dinner recipe
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Thinking Indicator -->
+      <div id="thinking-indicator" class="thinking-indicator hidden">
+        <div class="thinking-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span id="thinking-text">Thinking...</span>
+      </div>
+
+      <!-- Input Area -->
+      <div class="chat-input-area">
+        <div class="input-container">
+          <textarea
+            id="message-input"
+            placeholder="Type your message..."
+            rows="1"
+            maxlength="1000"
+            autocomplete="off"
+          ></textarea>
+          <button id="send-btn" class="send-btn" title="Send message" disabled>
+            <i data-lucide="arrow-up"></i>
+          </button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ═══════════════════ TOAST CONTAINER ═══════════════════ -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- App Script -->
+  <script src="js/app.js"></script>
+</body>
+</html>
